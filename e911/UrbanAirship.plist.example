@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>HOST</key>
+	<string></string>
+	<key>APP_KEY</key>
+	<string></string>
+	<key>APP_SECRET</key>
+	<string></string>
+	<key>MASTER_SECRET</key><!-- TODO move master secret to broadcast server -->
+	<string></string>
+</dict>
+</plist>

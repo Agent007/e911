@@ -1,0 +1,153 @@
+<!DOCTYPE HTML>
+<html><!-- derived from https://github.com/urbanairship/phonegap-example/blob/master/www/index.html -->
+  <head>
+    <!-- Change this if you want to allow scaling -->
+    <meta name="viewport" content="width=default-width; user-scalable=no" />
+
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+
+    <title>Good Samaritan</title>
+    
+    <!-- iPad/iPhone specific css below, add after your main css >
+    <link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />        
+    <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />        
+    -->
+    <script type="text/javascript" charset="utf-8" src="phonegap-1.0.0rc2.js"></script>
+    <script type="text/javascript" charset="utf-8" src="PushNotification.js"></script>
+    <script type="text/javascript" src="UrbanAirship.js"></script>
+    <script type="text/javascript" charset="utf-8">
+
+    // If you want to prevent dragging, uncomment this section
+    /*
+    function preventBehavior(e) { 
+      e.preventDefault(); 
+    };
+    document.addEventListener("touchmove", preventBehavior, false);
+    */
+    
+    function onBodyLoad() {
+        document.addEventListener('deviceready', onDeviceReady, false);
+    }
+    
+    /* When this function is called, PhoneGap has been initialized and is ready to roll */
+    function onDeviceReady() {
+        // IMPORTANT: must start notify after device is ready,
+        // otherwise you will not be able to receive the launching notification in callback
+        navigator.pushNotification.startNotify();
+        registerAPN();
+    }
+
+    /**
+     * Customize following callbacks in your application
+    */
+    
+    // Customized callback for receiving notification
+    PushNotification.prototype.notificationCallback = function (notification) {
+        var msg = '';
+        for (var property in notification) {
+            msg += property + ' : ' + notification[property] + '<br/>';
+        }
+        message.innerHTML = 'notification received:<br/><br/>' + msg;
+    };
+
+    // when APN register succeeded
+    function successCallback(e) {
+        result.innerHTML = 'Device registered. Device token:<br/>' + e.deviceToken + '<br/><br/>';
+        UA.HOST = e.host;
+        UA.APP_KEY = e.appKey;
+        UA.APP_SECRET = e.appSecret;
+        UA.MASTER_SECRET = e.masterSecret; // TODO remove once broadcast server is done
+        registerUAPush(e.deviceToken, e.host, e.appKey, e.appSecret);
+    }
+    
+    // when APN register failed
+    function errorCallback(e) {
+        result.innerHTML = 'Error during registration: ' + e.error;
+        registerButton.disabled=false;
+    }
+
+    // register button action
+    function registerAPN() {
+        result.innerHTML = 'Registering...';
+        
+        navigator.pushNotification.register(successCallback, errorCallback, { alert:true, badge:true, sound:true });
+
+        //or unregister
+        //navigator.pushNotification.register();
+    }
+    
+    // register urban airship push service after APN is registered successfully
+    function registerUAPush(deviceToken, host, appKey, appSecret) {
+        result.innerHTML += 'Registering with Urban Airship Push Service...';
+        
+        var request = new XMLHttpRequest();
+        
+        // open the client and encode our URL
+        request.open('PUT', host + '/api/device_tokens/' + deviceToken, true, appKey, appSecret);
+        
+        // callback when request finished
+        request.onload = function() {
+            result.innerHTML += 'Status: ' + this.status + '<br/>';
+            
+            if (this.status == 200 || this.status == 201) {
+                // register UA push success
+                result.innerHTML += 'Successfully registered this device with UrbanAirship.com push notification service';
+            } else {
+              // error
+                result.innerHTML += 'Error when registering UA push service.<br/>error: ' + this.statusText;
+            }
+        };
+
+        request.send();
+    }
+
+        // TODO call broadcast server that calls geoloqi.com API broadcast method
+	function broadcast(message) {
+		var xhr = new XMLHttpRequest();
+        var uri = UA.HOST + '/api/push/broadcast/'; // The last backslash is absolutely necessary or else it won't work!
+        xhr.open('POST', uri);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader('Authorization', 'Basic ' + btoa(UA.APP_KEY + ':' + UA.MASTER_SECRET));
+        xhr.onload = function() {
+            if (this.status == 200) {
+                result.innerHTML += 'Message sent';
+            } else {
+                result.innerHTML += 'Got error response when trying to broadcast: ' + this.statusText;
+            }
+        }
+        
+        // TODO generalize broadcast message JSON to include Android phones
+        // TODO set badge number programmatically on a broadcast server
+        var badgeNumber = 1;
+        var params = {
+            "aps": {
+                "badge":badgeNumber,
+                "alert":message
+            }
+        };
+        xhr.send(JSON.stringify(params));
+        
+        // Now entering code section from https://github.com/andrewwatson/RHOK-Good-Samaritan
+        var xhrVoice = new XMLHttpRequest();
+        xhrVoice.setRequestHeader('Content-Type', 'application/json');
+        xhrVoice.onerror = function(e) {
+            result.innerHTML += 'voice call error ' + e.error; 
+        };
+        xhrVoice.onload = function(e) {
+            result.innerHTML += 'xhrVoice.onload: ' + this.status + ' responseText: ' + this.responseText;
+        };
+        uri = 'http://hacks.apidoctor.com/RHOK-GS/API/needhelp.php';
+        xhrVoice.open('POST', uri);
+        var postData = {'recipient':'(Name of Requestor)', 'recip_phone':'+17862737007', 'helpers[0]':'+17862737007', 'message':'My wheelchair is stuck!'};  // TODO remove hard-coded values
+        xhrVoice.send(JSON.stringify(postData));
+	}
+    </script>
+  </head>
+
+  <body onload="onBodyLoad()">
+    <p id="result"></p>
+    <p id="message"></p>
+
+	<input type="button" value="Send" onclick="broadcast('test');" />
+  </body>
+</html>

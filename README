@@ -1,0 +1,15 @@
+Find the nearest people, within a configurable radius, to help you with your emergency. Those nearby 
+will receive an SMS and reply with a text message if they can help you, which will then initiate an 
+anonymized phone call between the helper ("good samaritan") and the person needing help. 
+
+Future extension(s): Add audio and/or video conferencing (possibly with SkypeKit, which is in limited 
+beta). This could evolve into a system that meets the FCC's requirements for an enhanced 911 system.
+
+Note that similar apps have been built: guardly.com & Fire Dept
+
+Built with:
+PhoneGap 1.0.0rc2
+latest XCode 4.2 with iOS 5 SDK
+Mac OS X 10.7 (Lion)
+
+Before compiling, rename UrbanAirship.plist.example to UrbanAirship.plist and fill in with your app's info
