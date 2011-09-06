@@ -1,8 +1,7 @@
 <!DOCTYPE HTML>
 <html><!-- derived from https://github.com/urbanairship/phonegap-example/blob/master/www/index.html -->
   <head>
-    <!-- Change this if you want to allow scaling -->
-    <meta name="viewport" content="width=default-width; user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
 
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
 
@@ -12,9 +11,18 @@
     <link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />        
     <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />        
     -->
+    <link rel="stylesheet" href="jquery.mobile-1.0b2.css" type="text/css" />
+    <link rel="stylesheet" href="map.css" type="text/css" /><!-- CSS file inspired by http://jquerymobile.com/test/experiments/google-maps/map.html -->
+    
     <script type="text/javascript" charset="utf-8" src="phonegap-1.0.0.js"></script>
+    <script type="text/javascript" src="jquery-1.6.2.js"></script>
+    <script type="text/javascript" src="jquery.mobile-1.0b2.js"></script>
     <script type="text/javascript" charset="utf-8" src="PushNotification.js"></script>
     <script type="text/javascript" src="UrbanAirship.js"></script>
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=true"></script>
+    <script type="text/javascript" src="jquery.ui.map.js"></script>
+    <script type="text/javascript" src="jquery.ui.map.services.js"></script>
+    <script type="text/javascript" src="jquery.ui.map.extensions.js"></script>
     <script type="text/javascript" charset="utf-8">
 
     // If you want to prevent dragging, uncomment this section
@@ -135,7 +143,7 @@
         };
         xhrVoice.onload = function(e) {
             result.innerHTML += 'xhrVoice.onload: ' + this.status + ' responseText: ' + this.responseText;
-        };
+        }; 
         uri = 'http://hacks.apidoctor.com/RHOK-GS/API/needhelp.php';
         xhrVoice.open('POST', uri);
         var postData = {'recipient':'(Name of Requestor)', 'recip_phone':'+17862737007', 'helpers[0]':'+17862737007', 'message':'My wheelchair is stuck!'};  // TODO remove hard-coded values
@@ -145,9 +153,60 @@
   </head>
 
   <body onload="onBodyLoad()">
-    <p id="result"></p>
-    <p id="message"></p>
+    <div id="broadcast" data-role="page">
+        <div data-role="header">Broadcast</div>
+        <div data-role="content">
+            <p id="result"></p>
+            <p id="message"></p>
 
-	<input type="button" value="Send" onclick="broadcast('test');" />
+            <input type="button" value="Send" onclick="broadcast('test');" />
+        </div>
+        <div data-role="footer" data-position="fixed">
+            <div data-role="navbar">
+                <ul>
+                    <li><a href="#broadcast" class="ui-btn-active">Broadcast</a></li>
+                    <li><a href="#map">Map</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div id="map" data-role="page" data-fullscreen="true" class="map">
+        <div data-role="header" data-position="fixed">
+            Map
+        </div>
+        <div id="map_canvas" data-role="content" class="map">
+        </div>
+        <div data-role="footer" data-position="fixed">
+            <div data-role="navbar">
+                <ul>
+                    <li><a href="#broadcast">Broadcast</a></li>
+                    <li><a href="#map" class="ui-btn-active">Map</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script async="false" defer="true" type="text/javascript">
+          $('#map').live("pageshow", function() {
+                            //$('#map_canvas').gmap('refresh');
+                            });
+          
+          $('#map').live("pagecreate", function() {
+            $('#map_canvas').gmap({'center': '59.3426606750, 18.0736160278', 'mapTypeId': 'terrain'}).bind('init', function(evt, map) {
+                                                                                                                             $('#map_canvas').gmap('watchPosition', function(position, status) {
+                                                                                                                                                     if (status === 'OK') {
+                                                                                                                                                        var latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                                                                                                                                                        var markers = $('#map_canvas').gmap('get', 'markers' );
+                                                                                                                                                        if ( !markers['client'] ) {
+                                                                                                                                                            $('#map_canvas').gmap('addMarker', { 'id': 'client', 'position': latlng, 'bounds': true });
+                                                                                                                                                        } else {
+                                                                                                                                                            markers['client'].setPosition(latlng);
+                                                                                                                                                            map.panTo(latlng);
+                                                                                                                                                        }
+                                                                                                                                                     }
+                                                                                                                                                });
+                                                                                                                             });
+                            });
+          
+    </script>
   </body>
 </html>
