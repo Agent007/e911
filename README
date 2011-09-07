@@ -5,10 +5,10 @@ anonymized phone call between the helper ("good samaritan") and the person needi
 Future extension(s): Add audio and/or video conferencing (possibly with SkypeKit, which is in limited 
 beta). This could evolve into a system that meets the FCC's requirements for an enhanced 911 system.
 
-Note that similar apps have been built: guardly.com & Fire Dept
+Note that similar apps have been built: guardly.com, Fire Dept, Guardian Watch (guardianwatch.com)
 
 Built with:
-PhoneGap 1.0.0rc2
+PhoneGap 1.0.0
 latest XCode 4.2 with iOS 5 SDK
 Mac OS X 10.7 (Lion)
 
