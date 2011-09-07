@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AF14AE231417EF20008C5FC9 /* map.js in Sources */ = {isa = PBXBuildFile; fileRef = AF14AE221417EF20008C5FC9 /* map.js */; };
 		AF1AD1F813D77D9200B6C8A0 /* README in Resources */ = {isa = PBXBuildFile; fileRef = AF1AD1F713D77D9200B6C8A0 /* README */; };
 		AF1AD1FA13D78E1F00B6C8A0 /* UrbanAirship.plist in Resources */ = {isa = PBXBuildFile; fileRef = AF1AD1F913D78E1F00B6C8A0 /* UrbanAirship.plist */; };
 		AF1AD1FC13D7991E00B6C8A0 /* UrbanAirship.plist.example in Resources */ = {isa = PBXBuildFile; fileRef = AF1AD1FB13D7991E00B6C8A0 /* UrbanAirship.plist.example */; };
@@ -42,6 +43,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		AF14AE221417EF20008C5FC9 /* map.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = map.js; path = www/map.js; sourceTree = "<group>"; };
 		AF1AD1F713D77D9200B6C8A0 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		AF1AD1F913D78E1F00B6C8A0 /* UrbanAirship.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = UrbanAirship.plist; sourceTree = "<group>"; };
 		AF1AD1FB13D7991E00B6C8A0 /* UrbanAirship.plist.example */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = UrbanAirship.plist.example; sourceTree = "<group>"; };
@@ -117,6 +119,7 @@
 		AFBE404413CFAA17000B7CA0 = {
 			isa = PBXGroup;
 			children = (
+				AF14AE221417EF20008C5FC9 /* map.js */,
 				AFBE409613CFAA17000B7CA0 /* Classes */,
 				AFBE405513CFAA17000B7CA0 /* Frameworks */,
 				AFBE409A13CFAA17000B7CA0 /* Plugins */,
@@ -340,6 +343,7 @@
 				AFBE407713CFAA17000B7CA0 /* main.m in Sources */,
 				AFBE409913CFAA17000B7CA0 /* AppDelegate.m in Sources */,
 				AFB8FAC613D6168B009D9A94 /* PushNotification.m in Sources */,
+				AF14AE231417EF20008C5FC9 /* map.js in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
