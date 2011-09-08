@@ -29,6 +29,8 @@
     document.addEventListener("touchmove", preventBehavior, false);
     */
 
+    var currentDeviceToken;
+        
     // register urban airship push service after APN is registered successfully
     function registerWithUrbanAirship(deviceToken, host, appKey, appSecret) {
             
@@ -54,6 +56,7 @@
         UA.APP_KEY = e.appKey;
         UA.APP_SECRET = e.appSecret;
         UA.MASTER_SECRET = e.masterSecret; // TODO remove once broadcast server is done
+        currentDeviceToken = e.deviceToken;
         registerWithUrbanAirship(e.deviceToken, e.host, e.appKey, e.appSecret);
     }
         
@@ -78,7 +81,7 @@
     */
     
     // Customized callback for receiving notification
-    PushNotification.prototype.notificationCallback = function (notification) {
+    PushNotification.prototype.notificationCallback = function(notification) {
         var msg = '';
         for (var property in notification) {
             msg += property + ' : ' + notification[property] + '<br/>';
@@ -108,7 +111,10 @@
             "aps": {
                 "badge":badgeNumber,
                 "alert":message
-            }
+            },
+            "exclude_tokens":[
+                currentDeviceToken
+            ]
         };
         xhr.send(JSON.stringify(params));
         
