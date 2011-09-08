@@ -7,10 +7,6 @@
 
     <title>Good Samaritan</title>
     
-    <!-- iPad/iPhone specific css below, add after your main css >
-    <link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />        
-    <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />        
-    -->
     <link rel="stylesheet" href="jquery.mobile-1.0b2.css" type="text/css" />
     <link rel="stylesheet" href="map.css" type="text/css" /><!-- CSS file inspired by http://jquerymobile.com/test/experiments/google-maps/map.html -->
     
@@ -32,19 +28,51 @@
     };
     document.addEventListener("touchmove", preventBehavior, false);
     */
-    
-    function onBodyLoad() {
-        document.addEventListener('deviceready', onDeviceReady, false);
+
+    // register urban airship push service after APN is registered successfully
+    function registerWithUrbanAirship(deviceToken, host, appKey, appSecret) {
+            
+        var request = new XMLHttpRequest();
+            
+        // open the client and encode our URL
+        request.open('PUT', host + '/api/device_tokens/' + deviceToken, true, appKey, appSecret);
+            
+        // callback when request finished
+        request.onload = function() {
+                
+            if (!(this.status == 200 || this.status == 201)) {
+                // error
+                alert('Error when registering with Urban Airship: ' + 'Status - ' + this.status + ', ' + this.statusText);
+            }
+        };
+            
+        request.send();
+    }        
+        
+    function handleRegistrationSuccess(e) {
+        UA.HOST = e.host;
+        UA.APP_KEY = e.appKey;
+        UA.APP_SECRET = e.appSecret;
+        UA.MASTER_SECRET = e.masterSecret; // TODO remove once broadcast server is done
+        registerWithUrbanAirship(e.deviceToken, e.host, e.appKey, e.appSecret);
     }
-    
-    /* When this function is called, PhoneGap has been initialized and is ready to roll */
+        
+    function handleRegistrationFailure(e) {
+        alert('Error during registration: ' + e.error);
+    }
+        
+    /* When this function is called, PhoneGap has been initialized and is ready */
     function onDeviceReady() {
         // IMPORTANT: must start notify after device is ready,
         // otherwise you will not be able to receive the launching notification in callback
         navigator.pushNotification.startNotify();
-        registerAPN();
+        navigator.pushNotification.register(handleRegistrationSuccess, handleRegistrationFailure, { alert:true, badge:true, sound:true });
     }
-
+        
+    function onBodyLoad() {
+        document.addEventListener('deviceready', onDeviceReady, false);
+    }
+        
     /**
      * Customize following callbacks in your application
     */
@@ -57,57 +85,6 @@
         }
         message.innerHTML = 'notification received:<br/><br/>' + msg;
     };
-
-    // when APN register succeeded
-    function successCallback(e) {
-        result.innerHTML = 'Device registered. Device token:<br/>' + e.deviceToken + '<br/><br/>';
-        UA.HOST = e.host;
-        UA.APP_KEY = e.appKey;
-        UA.APP_SECRET = e.appSecret;
-        UA.MASTER_SECRET = e.masterSecret; // TODO remove once broadcast server is done
-        registerUAPush(e.deviceToken, e.host, e.appKey, e.appSecret);
-    }
-    
-    // when APN register failed
-    function errorCallback(e) {
-        result.innerHTML = 'Error during registration: ' + e.error;
-        registerButton.disabled=false;
-    }
-
-    // register button action
-    function registerAPN() {
-        result.innerHTML = 'Registering...';
-        
-        navigator.pushNotification.register(successCallback, errorCallback, { alert:true, badge:true, sound:true });
-
-        //or unregister
-        //navigator.pushNotification.register();
-    }
-    
-    // register urban airship push service after APN is registered successfully
-    function registerUAPush(deviceToken, host, appKey, appSecret) {
-        result.innerHTML += 'Registering with Urban Airship Push Service...';
-        
-        var request = new XMLHttpRequest();
-        
-        // open the client and encode our URL
-        request.open('PUT', host + '/api/device_tokens/' + deviceToken, true, appKey, appSecret);
-        
-        // callback when request finished
-        request.onload = function() {
-            result.innerHTML += 'Status: ' + this.status + '<br/>';
-            
-            if (this.status == 200 || this.status == 201) {
-                // register UA push success
-                result.innerHTML += 'Successfully registered this device with UrbanAirship.com push notification service';
-            } else {
-              // error
-                result.innerHTML += 'Error when registering UA push service.<br/>error: ' + this.statusText;
-            }
-        };
-
-        request.send();
-    }
 
         // TODO call broadcast server that calls geoloqi.com API broadcast method
 	function broadcast(message) {
