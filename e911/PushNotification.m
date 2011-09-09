@@ -38,14 +38,6 @@
 @synthesize registerSuccessCallback;
 @synthesize registerErrorCallback;
 
-/*
-- (void)dealloc {
-    [notificationMessage release];
-    [registerSuccessCallback release];
-    [registerErrorCallback release];
-    [super dealloc];
-}
-*/
 
 - (void)registerAPN:(NSMutableArray *)arguments 
            withDict:(NSMutableDictionary *)options {
@@ -84,14 +76,7 @@
     }
 }
 
-/*
-- (void)isEnabled:(NSMutableArray *)arguments withDict:(NSMutableDictionary *)options {
-    UIRemoteNotificationType type = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
-    NSString *jsStatement = [NSString stringWithFormat:@"navigator.pushNotification.isEnabled = %d;", type != UIRemoteNotificationTypeNone];
-}
-*/
-
-- (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {/*host:(NSString *)host appKey:(NSString *)appKey appSecret:(NSString *)appSecret masterSecret:(NSString *)masterSecret {*/
+- (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
     NSString *token = [[[[deviceToken description] stringByReplacingOccurrencesOfString:@"<"withString:@""] 
                         stringByReplacingOccurrencesOfString:@">" withString:@""] 
                        stringByReplacingOccurrencesOfString: @" " withString: @""];
@@ -127,19 +112,9 @@
 
 - (void)notificationReceived {
     if (ready && notificationMessage != nil) {
-        NSMutableString *jsonStr = [NSMutableString stringWithString:@"{"];
-        if ([notificationMessage objectForKey:@"alert"]) {
-            [jsonStr appendFormat:@"alert:'%@',", [notificationMessage objectForKey:@"alert"]];
-        }
-        if ([notificationMessage objectForKey:@"badge"]) {
-            [jsonStr appendFormat:@"badge:%d,", [[notificationMessage objectForKey:@"badge"] intValue]];
-        }
-        if ([notificationMessage objectForKey:@"sound"]) {
-            [jsonStr appendFormat:@"sound:'%@',", [notificationMessage objectForKey:@"sound"]];
-        }
-        [jsonStr appendString:@"}"];
-        
-        NSString *jsStatement = [NSString stringWithFormat:@"navigator.pushNotification.notificationCallback(%@);", jsonStr];
+        SBJsonWriter *jsonWriter = [[SBJsonWriter alloc] init];
+        NSString *jsonString = [jsonWriter stringWithObject:notificationMessage];
+        NSString *jsStatement = [NSString stringWithFormat:@"navigator.pushNotification.notificationCallback(%@);", jsonString];
         [super writeJavascript:jsStatement];
         NSLog(@"run JS: %@", jsStatement);
         self.notificationMessage = nil;

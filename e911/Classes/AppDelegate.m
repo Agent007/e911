@@ -67,7 +67,7 @@
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     PushNotification *pushHandler = [self getCommandInstance:@"PushNotification"];
-    pushHandler.notificationMessage = [userInfo objectForKey:@"aps"];
+    pushHandler.notificationMessage = userInfo;
     [pushHandler notificationReceived];
 }
 
@@ -108,6 +108,9 @@
     //Now that the web view has loaded, pass on the notfication
     if (launchNotification != nil) {
         PushNotification *pushHandler = [self getCommandInstance:@"PushNotification"];
+        SBJsonWriter *jsonWriter = [[SBJsonWriter alloc] init];
+        NSString *jsonString = [jsonWriter stringWithObject:launchNotification];
+        NSLog(@"webViewDidFinishLoad:%@", jsonString);
         pushHandler.notificationMessage = [launchNotification objectForKey:@"aps"];
     }
 }
@@ -141,15 +144,5 @@
 {
 	return [ super execute:command];
 }
-
-/*
-- (void)dealloc
-{
-    [launchNotification release];
-    launchNotification = nil;
-    
-	[ super dealloc ];
-}
-*/
 
 @end
