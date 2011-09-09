@@ -25,18 +25,27 @@
 
 #import "PushNotification.h"
 
+#ifdef PHONEGAP_FRAMEWORK
+    #import <PhoneGap/PhoneGapDelegate.h>
+#else
+    #import "PhoneGapDelegate.h"
+#endif
+
+
 @implementation PushNotification
 
 @synthesize notificationMessage;
 @synthesize registerSuccessCallback;
 @synthesize registerErrorCallback;
 
+/*
 - (void)dealloc {
     [notificationMessage release];
     [registerSuccessCallback release];
     [registerErrorCallback release];
     [super dealloc];
 }
+*/
 
 - (void)registerAPN:(NSMutableArray *)arguments 
            withDict:(NSMutableDictionary *)options {
@@ -75,10 +84,12 @@
     }
 }
 
+/*
 - (void)isEnabled:(NSMutableArray *)arguments withDict:(NSMutableDictionary *)options {
     UIRemoteNotificationType type = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
     NSString *jsStatement = [NSString stringWithFormat:@"navigator.pushNotification.isEnabled = %d;", type != UIRemoteNotificationTypeNone];
 }
+*/
 
 - (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {/*host:(NSString *)host appKey:(NSString *)appKey appSecret:(NSString *)appSecret masterSecret:(NSString *)masterSecret {*/
     NSString *token = [[[[deviceToken description] stringByReplacingOccurrencesOfString:@"<"withString:@""] 
@@ -88,8 +99,7 @@
     NSLog(@"didRegisterForRemoteNotificationsWithDeviceToken:%@", token);
     
     NSString* appPlistName = @"UrbanAirship";
-    PhoneGapDelegate* phoneGapDelegate = [self appDelegate];
-	NSDictionary* urbanairshipPlist = [[phoneGapDelegate class] getBundlePlist:appPlistName];
+	NSDictionary* urbanairshipPlist = [[PhoneGapDelegate class] getBundlePlist:appPlistName];
 	if (urbanairshipPlist == nil) {
 		NSLog(@"WARNING: %@.plist is missing.", appPlistName);
 	}

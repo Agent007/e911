@@ -9,10 +9,6 @@
 #endif
 #import "PushNotification.h"
 
-// TODO externalize these constants into a config file
-#define UA_HOST @"https://go.urbanairship.com/"
-#define UA_KEY @"jKo9-QuTQQmunE6MREQZDg"
-#define UA_SECRET @"BfIuuHMfRSS_2AsVV1Uz7g"
 
 @implementation AppDelegate
 
@@ -42,7 +38,7 @@
 	*/
     // cache notification, if any, until webview finished loading, then process it if needed
     // assume will not receive another message before webview loaded
-    launchNotification = [[launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey] retain];
+    launchNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
     application.applicationIconBadgeNumber = 0;
     
     //Workaround for a PhoneGap options parsing issue that causes a crash when starting up from a push notification
@@ -146,6 +142,7 @@
 	return [ super execute:command];
 }
 
+/*
 - (void)dealloc
 {
     [launchNotification release];
@@ -153,5 +150,6 @@
     
 	[ super dealloc ];
 }
+*/
 
 @end

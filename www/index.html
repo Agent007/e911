@@ -82,6 +82,7 @@
     
     // Customized callback for receiving notification
     PushNotification.prototype.notificationCallback = function(notification) {
+        alert(JSON.stringify(notification));
         var msg = '';
         for (var property in notification) {
             msg += property + ' : ' + notification[property] + '<br/>';
@@ -114,9 +115,10 @@
             },
             "exclude_tokens":[
                 currentDeviceToken
-            ]
+            ],
+            "latlng":[7, 7]
         };
-        xhr.send(JSON.stringify(params));
+        xhr.send(JSON.stringify(params)); // TODO strip whitespace to improve performance
         
         // Now entering code section from https://github.com/andrewwatson/RHOK-Good-Samaritan
         var xhrVoice = new XMLHttpRequest();
